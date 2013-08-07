@@ -56,14 +56,14 @@ class Booli_Search extends WP_Widget {
 			echo $args['before_title'] . __('Booli Search', 'booli-search') . ' - ' . $q . $args['after_title'];
 		}
 
-		$result = get_transient("booli_search_" . $q);
+		$result = get_transient("booli_search_{$q}_{$instance['limit']}");
 		if (empty($result)) {
-			if (empty($q)) {
+			if (!empty($q)) {
 				$result = $this->request($instance['callerId'], $instance['key'], array('q' => $q, 'limit' => $instance['limit']));
 			} else {
 				$result = $this->request($instance['callerId'], $instance['key'], array('areaId' => 77104, 'limit' => $instance['limit']));
 			}
-			set_transient("booli_search_" . $q, $result, 1 * HOUR_IN_SECONDS);
+			set_transient("booli_search_{$q}_{$instance['limit']}", $result, 1 * HOUR_IN_SECONDS);
 		}
 
 		include(plugin_dir_path( __FILE__ ) . '/views/widget.php');
@@ -74,7 +74,7 @@ class Booli_Search extends WP_Widget {
 	public function update($new_instance, $old_instance) {
 
 		$instance = $old_instance;
-		delete_transient("booli_search_" . $instance['q']);
+		delete_transient("booli_search_{$instance['q']}_{$instance['limit']}");
 
 		$instance['q'] = (!empty($new_instance['q'])) ? strip_tags($new_instance['q']) : '';
 		$instance['callerId'] = (!empty($new_instance['callerId'])) ? strip_tags($new_instance['callerId']) : '';
@@ -97,6 +97,10 @@ class Booli_Search extends WP_Widget {
 
 	private function request($callerId, $key, $params = array()) {
 
+		if (empty($callerId) || empty($key)) {
+			return array();
+		}
+
 		$auth = array();
 		$auth['callerId'] = $callerId;
 		$auth['time'] = time();
@@ -116,7 +120,7 @@ class Booli_Search extends WP_Widget {
 		if ($httpCode != 200) {
 			// fail
 		}
-		$result = json_decode($response);
+		$result = json_decode($response, true);
 
 		return $result;
 	}

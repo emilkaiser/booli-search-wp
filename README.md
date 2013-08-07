@@ -4,11 +4,7 @@ Displays search results from swedish real estate search engine Booli.se.
 
 ## Installation
 
-1. Upload `booli-search` folder to `/wp-content/plugins/`.
-2. Click "Activate" in the WordPress plugins menu.
-3. Place `booli-search` widget in your sidebar.
-4. Add your Booli API credentials (http://www.booli.se/api) and search query
-5. Save and enjoy!
+Instructions can be found [here](http://wordpress.org/plugins/booli-search/).
 
 ## License
 
